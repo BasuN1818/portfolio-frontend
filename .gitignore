@@ -1,0 +1,8 @@
+node_modules
+.env
+dist
+backend/node_modules/
+backend/contacts.json
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NB Studio — Complete React Demo</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Standalone (for JSX in browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- GSAP, AOS, Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    @keyframes glowPulse {
+      from { transform: scale(0.88) rotate(-5deg); opacity: 0.6; }
+      to { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    }
+    @keyframes scrollText {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @keyframes pulse-g {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+      50% { box-shadow: 0 0 0 5px rgba(0,255,136,0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ══════════════════════════════════════════
+       CUSTOM CURSOR
+    ══════════════════════════════════════════ */
+    const CustomCursor = () => {
+      const dotRef = useRef(null);
+      const ringRef = useRef(null);
+
+      useEffect(() => {
+        const dot = dotRef.current;
+        const ring = ringRef.current;
+        if (!dot || !ring) return;
+
+        const xDot = gsap.quickTo(dot, "x", { duration: 0.1, ease: "none" });
+        const yDot = gsap.quickTo(dot, "y", { duration: 0.1, ease: "none" });
+        const xRing = gsap.quickTo(ring, "x", { duration: 0.5, ease: "power3.out" });
+        const yRing = gsap.quickTo(ring, "y", { duration: 0.5, ease: "power3.out" });
+
+        const onMouseMove = (e) => {
+          xDot(e.clientX);
+          yDot(e.clientY);
+          xRing(e.clientX);
+          yRing(e.clientY);
+        };
+
+        const handleMouseOver = (e) => {
+          const target = e.target.closest('button, a, .hover-target');
+          if (target) {
+            gsap.to(ring, { scale: 1.9, borderColor: 'rgba(0,212,255,0.5)', duration: 0.3, ease: 'power2.out' });
+            gsap.to(dot, { scale: 0.4, duration: 0.3 });
+          }
+        };
+
+        const handleMouseOut = (e) => {
+          const target = e.target.closest('button, a, .hover-target');
+          if (target) {
+            gsap.to(ring, { scale: 1, borderColor: 'rgba(255,255,255,0.35)', duration: 0.3 });
+            gsap.to(dot, { scale: 1, duration: 0.3 });
+          }
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseover', handleMouseOver);
+        document.addEventListener('mouseout', handleMouseOut);
+
+        return () => {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseover', handleMouseOver);
+          document.removeEventListener('mouseout', handleMouseOut);
+        };
+      }, []);
+
+      return (
+        <React.Fragment>
+          <div ref={dotRef} className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference -translate-x-1/2 -translate-y-1/2" />
+          <div ref={ringRef} className="fixed top-0 left-0 w-[38px] h-[38px] border-[1.5px] border-white/35 rounded-full pointer-events-none z-[9998] -translate-x-1/2 -translate-y-1/2" />
+        </React.Fragment>
+      );
+    };
+
+    /* ══════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════ */
+    const Navbar = () => {
+      const [activeTab, setActiveTab] = useState('Device');
+      const [mobOpen, setMobOpen] = useState(false);
+      const navRef = useRef(null);
+      const tabs = ['Device', 'Real Stories', 'Science', 'Plans', 'Reach Us'];
+
+      useEffect(() => {
+        gsap.to(navRef.current, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', delay: 0.2 });
+      }, []);
+
+      useEffect(() => {
+        if (mobOpen) {
+          gsap.to(['#dd1', '#dd2'], { rotate: 45, x: 4, y: (i) => i === 0 ? 4 : -4, duration: 0.32, ease: 'power3.inOut' });
+          gsap.to(['#dd3', '#dd4'], { rotate: -45, x: -4, y: (i) => i === 0 ? -4 : 4, duration: 0.32, ease: 'power3.inOut' });
+          gsap.fromTo('.mob-item', { y: 40, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.07, duration: 0.55, ease: 'power3.out', delay: 0.15 });
+        } else {
+          gsap.to(['#dd1', '#dd2', '#dd3', '#dd4'], { rotate: 0, x: 0, y: 0, duration: 0.3, ease: 'power3.inOut' });
+          gsap.to('.mob-item', { y: -25, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.in' });
+        }
+      }, [mobOpen]);
+
+      return (
+        <React.Fragment>
+          <nav ref={navRef} className="fixed top-[18px] left-1/2 -translate-x-1/2 -translate-y-[120px] w-[calc(100%-32px)] max-w-[1160px] flex items-center justify-between p-3 px-[18px] bg-[#050505]/55 backdrop-blur-2xl border border-white/10 rounded-full z-[1000] opacity-0 shadow-[0_0_40px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.05)] hover-target">
+            <div className="flex items-center gap-2.5 cursor-pointer group hover-target">
+              <svg className="transition-transform duration-500 group-hover:rotate-180 group-hover:scale-110" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <rect x="0.5" y="0.5" width="29" height="29" rx="8" stroke="rgba(255,255,255,0.25)" strokeWidth="1"/>
+                <rect x="4" y="4" width="22" height="22" rx="5" fill="rgba(255,255,255,0.04)"/>
+                <path d="M9 21V9l7 10.5V9" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M18 9h4v12h-4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M18 15h4" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+              <span className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-white/80">NB Studio</span>
+            </div>
+            <div className="hidden md:flex items-center gap-0.5">
+              {tabs.map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} className={`px-[15px] py-[7px] rounded-full text-[12px] font-medium tracking-[0.04em] transition-all hover-target ${activeTab === tab ? 'text-white bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}>
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2.5">
+              <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-[12px] font-semibold tracking-[0.08em] text-white transition-all hover:bg-white/15 hover:scale-105 hover-target">
+                <span className="w-[7px] h-[7px] bg-[#00ff88] rounded-full animate-[pulse-g_2s_infinite]"></span>
+                Get Started
+              </button>
+              <button onClick={() => setMobOpen(!mobOpen)} className="flex md:hidden items-center gap-[7px] px-[14px] py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold tracking-[0.15em] text-white/75 hover-target">
+                <span>{mobOpen ? 'CLOSE' : 'MENU'}</span>
+                <div className="grid grid-cols-2 gap-[3.5px]">
+                  <span id="dd1" className="w-[5px] h-[5px] bg-white/75 rounded-full block"></span><span id="dd2" className="w-[5px] h-[5px] bg-white/75 rounded-full block"></span>
+                  <span id="dd3" className="w-[5px] h-[5px] bg-white/75 rounded-full block"></span><span id="dd4" className="w-[5px] h-[5px] bg-white/75 rounded-full block"></span>
+                </div>
+              </button>
+            </div>
+          </nav>
+          <div className={`fixed inset-0 bg-black/95 backdrop-blur-3xl z-[900] flex flex-col items-center justify-center gap-2 transition-opacity duration-400 ${mobOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+            {tabs.map(tab => (
+              <div key={tab} onClick={() => { setActiveTab(tab); setMobOpen(false); }} className={`mob-item text-[clamp(2.2rem,7vw,4.5rem)] font-extrabold tracking-[-0.03em] py-2.5 cursor-pointer transition-all hover-target ${activeTab === tab ? 'text-white' : 'text-white/20 hover:text-white'}`}>
+                {tab}
+              </div>
+            ))}
+          </div>
+        </React.Fragment>
+      );
+    };
+
+    /* ══════════════════════════════════════════
+       THREE.JS BACKGROUND
+    ══════════════════════════════════════════ */
+    const ThreeBackground = () => {
+      const mountRef = useRef(null);
+
+      useEffect(() => {
+        if (!mountRef.current || !window.THREE) return;
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.022);
+        const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 28;
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        mountRef.current.appendChild(renderer.domElement);
+
+        const charTex = (char, rgba) => {
+          const sz = 128, cv = document.createElement('canvas');
+          cv.width = sz; cv.height = sz;
+          const ctx = cv.getContext('2d');
+          ctx.font = `800 ${sz * 0.78}px 'Space Grotesk', sans-serif`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba;
+          ctx.fillText(char, sz / 2, sz / 2);
+          return new THREE.CanvasTexture(cv);
+        };
+
+        const texPool = [
+          charTex('N', 'rgba(255,255,255,0.95)'), charTex('N', 'rgba(200,200,200,0.6)'),
+          charTex('N', 'rgba(130,130,130,0.35)'), charTex('N', 'rgba(70,70,70,0.2)'),
+          charTex('B', 'rgba(255,255,255,0.95)'), charTex('B', 'rgba(200,200,200,0.6)'),
+          charTex('B', 'rgba(130,130,130,0.35)'), charTex('B', 'rgba(70,70,70,0.2)'),
+        ];
+
+        const sprites = [];
+        for (let i = 0; i < 360; i++) {
+          const mat = new THREE.SpriteMaterial({ map: texPool[Math.floor(Math.random() * texPool.length)], transparent: true, opacity: Math.random() * 0.55 + 0.08, blending: THREE.AdditiveBlending });
+          const sp = new THREE.Sprite(mat);
+          sp.position.set((Math.random() - 0.5) * 65, (Math.random() - 0.5) * 42, (Math.random() - 0.5) * 38);
+          const s = Math.random() * 1.3 + 0.25;
+          sp.scale.set(s, s, 1);
+          sp.userData = { vx: (Math.random() - 0.5) * 0.007, baseY: sp.position.y, amp: Math.random() * 0.35 + 0.1, freq: Math.random() * 0.25 + 0.12, phase: Math.random() * Math.PI * 2, opBase: mat.opacity };
+          scene.add(sp);
+          sprites.push(sp);
+        }
+
+        let pmx = 0, pmy = 0;
+        const onMouseMove = e => { pmx = (e.clientX / window.innerWidth - 0.5) * 2; pmy = -(e.clientY / window.innerHeight - 0.5) * 2; };
+        window.addEventListener('mousemove', onMouseMove);
+
+        let t = 0, reqId;
+        const loop = () => {
+          reqId = requestAnimationFrame(loop);
+          t += 0.008;
+          camera.position.x += (pmx * 2.5 - camera.position.x) * 0.018;
+          camera.position.y += (pmy * 1.2 - camera.position.y) * 0.018;
+          camera.lookAt(scene.position);
+          sprites.forEach(sp => {
+            const ud = sp.userData;
+            sp.position.x += ud.vx;
+            sp.position.y = ud.baseY + Math.sin(t * ud.freq + ud.phase) * ud.amp;
+            if (sp.position.x > 35) sp.position.x = -35;
+            if (sp.position.x < -35) sp.position.x = 35;
+            sp.material.opacity = ud.opBase * (0.55 + 0.45 * Math.sin(t * 0.4 + ud.phase));
+          });
+          renderer.render(scene, camera);
+        };
+        loop();
+
+        return () => {
+          window.removeEventListener('mousemove', onMouseMove);
+          cancelAnimationFrame(reqId);
+          mountRef.current.innerHTML = '';
+        };
+      }, []);
+
+      return <div ref={mountRef} className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }} />;
+    };
+
+    /* ══════════════════════════════════════════
+       PREMIUM HERO
+    ══════════════════════════════════════════ */
+    const PremiumHero = ({ image1, image2 }) => {
+      const containerRef = useRef(null);
+      const topImageRef = useRef(null);
+
+      useEffect(() => {
+        AOS.init({ once: true, easing: 'ease-out-cubic', offset: 40 });
+        const container = containerRef.current;
+        const topImage = topImageRef.current;
+        if (!container || !topImage) return;
+
+        gsap.fromTo(container, 
+          { x: 100, opacity: 0 }, 
+          { x: 0, opacity: window.innerWidth >= 768 ? 1 : 0.3, duration: 1.5, ease: 'power3.out', delay: 0.2 }
+        );
+
+        gsap.set(topImage, { '--x': -9999, '--y': -9999, '--radius': 0 });
+        const xTo = gsap.quickTo(topImage, '--x', { duration: 0.5, ease: 'power3.out' });
+        const yTo = gsap.quickTo(topImage, '--y', { duration: 0.5, ease: 'power3.out' });
+
+        const handleMouseMove = (e) => {
+          const rect = container.getBoundingClientRect();
+          xTo(e.clientX - rect.left);
+          yTo(e.clientY - rect.top);
+        };
+
+        const handleMouseEnter = () => gsap.to(topImage, { '--radius': 250, duration: 0.8, ease: 'power2.out' });
+        const handleMouseLeave = () => gsap.to(topImage, { '--radius': 0, duration: 1.2, ease: 'power3.inOut', onComplete: () => { xTo(-9999); yTo(-9999); } });
+
+        container.addEventListener('mousemove', handleMouseMove);
+        container.addEventListener('mouseenter', handleMouseEnter);
+        container.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+          container.removeEventListener('mousemove', handleMouseMove);
+          container.removeEventListener('mouseenter', handleMouseEnter);
+          container.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      }, []);
+
+      return (
+        <section className="relative w-full h-screen min-h-[640px] overflow-hidden flex items-end bg-transparent">
+          <div className="absolute top-[-180px] right-[-100px] w-[700px] h-[700px] rounded-full pointer-events-none z-[1] opacity-60 bg-[radial-gradient(circle,rgba(0,212,255,0.13)_0%,transparent_70%)] animate-[glowPulse_4.5s_ease-in-out_infinite_alternate]"></div>
+          <div className="absolute bottom-[60px] right-[180px] w-[550px] h-[550px] rounded-full pointer-events-none z-[1] opacity-60 bg-[radial-gradient(circle,rgba(59,130,246,0.1)_0%,transparent_70%)] animate-[glowPulse_6s_ease-in-out_infinite_alternate-reverse]"></div>
+          <div className="absolute top-1/2 left-[30%] w-[400px] h-[400px] rounded-full pointer-events-none z-[1] opacity-60 bg-[radial-gradient(circle,rgba(120,80,255,0.07)_0%,transparent_70%)] animate-[glowPulse_7s_ease-in-out_infinite_alternate]"></div>
+
+          {/* Infinite Scrolling Marquee Behind Images */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full overflow-hidden z-[1] pointer-events-none flex">
+            <div className="flex shrink-0 animate-[scrollText_30s_linear_infinite]">
+              {[...Array(4)].map((_, i) => (
+                <h1 key={i} className="text-[clamp(6rem,12vw,14rem)] font-black text-white/10 uppercase tracking-tighter pr-12 whitespace-nowrap">
+                  Basanagoud Naduvinamani •
+                </h1>
+              ))}
+            </div>
+          </div>
+
+          <div ref={containerRef} className="absolute inset-0 mx-auto w-full md:w-[65%] h-full z-[2] opacity-30 md:opacity-100 flex items-center justify-center">
+            <div className="absolute inset-0 w-full h-full overflow-hidden z-[1] pointer-events-none">
+              <img src={image2 || './image2.png.png'} alt="Base" className="w-full h-full object-cover md:object-contain block pointer-events-none" />
+            </div>
+            <div ref={topImageRef} className="absolute inset-0 w-full h-full overflow-hidden z-[2] pointer-events-none grayscale contrast-110" style={{ WebkitMaskImage: 'radial-gradient(circle calc(var(--radius) * 1px) at calc(var(--x) * 1px) calc(var(--y) * 1px), transparent 0%, transparent 55%, black 100%)', maskImage: 'radial-gradient(circle calc(var(--radius) * 1px) at calc(var(--x) * 1px) calc(var(--y) * 1px), transparent 0%, transparent 55%, black 100%)' }}>
+              <img src={image1 || './image1.png.png'} alt="Masked" className="w-full h-full object-cover md:object-contain block pointer-events-none" />
+            </div>
+          </div>
+
+
+        </section>
+      );
+    };
+
+    /* ══════════════════════════════════════════
+       ABOUT PREMIUM SECTION
+    ══════════════════════════════════════════ */
+    const AboutPremiumSection = ({ image }) => {
+      const containerRef = useRef(null);
+      const leftColRef = useRef(null);
+      const rightColRef = useRef(null);
+      
+      useEffect(() => {
+        const leftCol = leftColRef.current;
+        const rightCol = rightColRef.current;
+    
+        if (!leftCol || !rightCol) return;
+    
+        // ScrollTrigger animation for the columns
+        gsap.fromTo(leftCol, 
+          { x: -50, opacity: 0 },
+          {
+            x: 0, opacity: 1, duration: 1.2, ease: 'power3.out',
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: 'top 75%',
+            }
+          }
+        );
+    
+        gsap.fromTo(rightCol.children, 
+          { y: 30, opacity: 0 },
+          {
+            y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power3.out',
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: 'top 70%',
+            }
+          }
+        );
+    
+        // Initial properties for the mask
+        gsap.set(leftCol, {
+          '--x': -9999,
+          '--y': -9999,
+          '--radius': 0,
+        });
+    
+        const xTo = gsap.quickTo(leftCol, '--x', { duration: 0.5, ease: 'power3.out' });
+        const yTo = gsap.quickTo(leftCol, '--y', { duration: 0.5, ease: 'power3.out' });
+    
+        const handleMouseMove = (e) => {
+          const rect = leftCol.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          xTo(x);
+          yTo(y);
+        };
+    
+        const handleMouseEnter = () => {
+          gsap.to(leftCol, {
+            '--radius': 300,
+            duration: 0.8,
+            ease: 'power2.out',
+          });
+        };
+    
+        const handleMouseLeave = () => {
+          gsap.to(leftCol, {
+            '--radius': 0,
+            duration: 1.2,
+            ease: 'power3.inOut',
+            onComplete: () => {
+              xTo(-9999);
+              yTo(-9999);
+            }
+          });
+        };
+    
+        leftCol.addEventListener('mousemove', handleMouseMove);
+        leftCol.addEventListener('mouseenter', handleMouseEnter);
+        leftCol.addEventListener('mouseleave', handleMouseLeave);
+    
+        return () => {
+          leftCol.removeEventListener('mousemove', handleMouseMove);
+          leftCol.removeEventListener('mouseenter', handleMouseEnter);
+          leftCol.removeEventListener('mouseleave', handleMouseLeave);
+          ScrollTrigger.getAll().forEach(t => t.kill());
+        };
+      }, []);
+    
+      return (
+        <section ref={containerRef} className="relative w-full py-24 bg-transparent text-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col lg:flex-row gap-16 items-center">
+            
+            {/* Left Column (Interactive Portrait Reveal) */}
+            <div 
+              ref={leftColRef}
+              className="relative w-full lg:w-1/2 aspect-[4/5] lg:aspect-[3/4] rounded-3xl overflow-hidden bg-[#050505] border border-white/5 shadow-2xl group"
+            >
+              {/* Base Layer (Pristine Portrait) */}
+              <div className="absolute inset-0 z-[1]">
+                <img 
+                  src={image || "./image.png.png"} 
+                  alt="Portrait Base" 
+                  className="w-full h-full object-cover scale-[1.35] -translate-x-[10%]"
+                />
+              </div>
+    
+              {/* Top Layer (Darkened/Blurred Portrait with Radial Mask) */}
+              <div 
+                className="absolute inset-0 z-[2] pointer-events-none transition-all duration-300"
+                style={{
+                  WebkitMaskImage: 'radial-gradient(circle calc(var(--radius) * 1px) at calc(var(--x) * 1px) calc(var(--y) * 1px), transparent 0%, rgba(0,0,0,0.2) 30%, black 70%)',
+                  maskImage: 'radial-gradient(circle calc(var(--radius) * 1px) at calc(var(--x) * 1px) calc(var(--y) * 1px), transparent 0%, rgba(0,0,0,0.2) 30%, black 70%)'
+                }}
+              >
+                {/* Same image but darkened and slightly blurred to obscure */}
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-10"></div>
+                <img 
+                  src={image || "./image.png.png"} 
+                  alt="Portrait Overlay" 
+                  className="w-full h-full object-cover scale-[1.35] -translate-x-[10%] grayscale"
+                />
+              </div>
+              
+              {/* Cyan/White Feathered Glow Edge Effect overlay */}
+              <div 
+                className="absolute inset-0 z-[3] pointer-events-none"
+                style={{
+                  background: 'radial-gradient(circle calc(var(--radius) * 1px) at calc(var(--x) * 1px) calc(var(--y) * 1px), transparent 40%, rgba(0,212,255,0.15) 50%, transparent 60%)'
+                }}
+              ></div>
+            </div>
+    
+            {/* Right Column (Professional Narrative & Details) */}
+            <div ref={rightColRef} className="w-full lg:w-1/2 flex flex-col gap-8 z-10">
+              
+              {/* Header */}
+              <div className="flex flex-col gap-3">
+                 <div className="flex items-center gap-3">
+                   <div className="w-8 h-[1px] bg-cyan-400"></div>
+                   <span className="text-xs font-bold tracking-[0.25em] uppercase text-cyan-400">Introduction</span>
+                 </div>
+                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold italic tracking-tight text-white uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                   ABOUT ME.
+                 </h2>
+              </div>
+    
+              {/* Narrative */}
+              <p className="text-base md:text-lg text-white/60 leading-relaxed font-light" style={{ fontFamily: "'Inter', sans-serif" }}>
+                I am <span className="text-white font-medium">Basanagoud Naduvinamani</span>, a BCA student with a passion for software development and technology. A detail-oriented software developer specializing in leveraging core concepts in <span className="text-cyan-400">Java</span> and modern web technologies (<span className="text-white/80">HTML, CSS, JavaScript, UI/UX, MySQL</span>) to build elegant, high-performance applications with clean architecture and precision.
+              </p>
+    
+              {/* Interactive Cards Section */}
+              <div className="flex flex-col gap-4 mt-2">
+                
+                {/* Card 1 */}
+                <div className="group relative p-5 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_10px_#22d3ee]"></div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className="flex-shrink-0 mt-1">
+                      <svg className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-[15px] font-semibold text-white tracking-wide mb-1.5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Core Technical Stack</h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed">Backend &amp; Core Logic: Java, Python (as needed), Software Architecture Principles.</p>
+                    </div>
+                  </div>
+                </div>
+    
+                {/* Card 2 */}
+                <div className="group relative p-5 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_10px_#3b82f6]"></div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className="flex-shrink-0 mt-1">
+                      <svg className="w-5 h-5 text-blue-500 drop-shadow-[0_0_6px_rgba(59,130,246,0.6)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-[15px] font-semibold text-white tracking-wide mb-1.5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Web Engineering &amp; Development</h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed">HTML, CSS, JavaScript (ES6+), Modern React.js (hooks, context), responsive design, Git.</p>
+                    </div>
+                  </div>
+                </div>
+    
+                {/* Card 3 */}
+                <div className="group relative p-5 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_10px_#c084fc]"></div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className="flex-shrink-0 mt-1">
+                      <svg className="w-5 h-5 text-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-[15px] font-semibold text-white tracking-wide mb-1.5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Problem Solving &amp; Systems</h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed">Algorithmic efficiency, data structures, MySQL database design and optimization.</p>
+                    </div>
+                  </div>
+                </div>
+    
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    /* ══════════════════════════════════════════
+       APP
+    ══════════════════════════════════════════ */
+    const App = () => {
+      return (
+        <React.Fragment>
+          <ThreeBackground />
+          <CustomCursor />
+          <Navbar />
+          <PremiumHero image1="./image1.png.png" image2="./image2.png.png" />
+          <AboutPremiumSection image="./image.png.png" />
+        </React.Fragment>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

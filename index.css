@@ -1,0 +1,341 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: auto; /* Required for Lenis smooth scroll */
+    background-color: #000000;
+  }
+  
+  body {
+    @apply bg-black text-white antialiased;
+    cursor: none; /* For CustomCursor */
+    overflow-x: hidden;
+  }
+
+  /* Custom Premium Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #18181b;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #22d3ee;
+    box-shadow: 0 0 10px #22d3ee;
+  }
+
+  @keyframes glowPulse {
+    from { transform: scale(0.88) rotate(-5deg); opacity: 0.6; }
+    to { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  }
+
+  @keyframes scrollText {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes pulse-g {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+    50% { box-shadow: 0 0 0 5px rgba(0,255,136,0); }
+  }
+
+  @keyframes neonAura {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Admin Panel CSS Variables */
+  :root {
+    --admin-bg: #0f172a;
+    --admin-surface: #1e293b;
+    --admin-surface-hover: #273548;
+    --admin-surface-elevated: #334155;
+    --admin-border: #334155;
+    --admin-border-hover: #475569;
+    --admin-text-primary: #f8fafc;
+    --admin-text-secondary: #94a3b8;
+    --admin-text-muted: #64748b;
+    --admin-primary: #6366f1;
+    --admin-primary-hover: #4f46e5;
+    --admin-primary-soft: rgba(99,102,241,0.1);
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-danger: #ef4444;
+    --admin-info: #3b82f6;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(9, 9, 11, 0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+  }
+
+  .glass-panel-heavy {
+    background: rgba(9, 9, 11, 0.75);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(63, 63, 70, 0.6);
+  }
+
+  .neon-aura-glow {
+    background: linear-gradient(270deg, #00f0ff, #a855f7, #3b82f6, #00f0ff);
+    background-size: 400% 400%;
+    animation: neonAura 8s ease infinite;
+  }
+
+  /* Admin Panel Utilities */
+  .card-3d {
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 
+      0 4px 6px rgba(0,0,0,0.07),
+      0 10px 20px rgba(0,0,0,0.06);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .card-3d:hover {
+    box-shadow: 
+      0 10px 25px rgba(0,0,0,0.1),
+      0 20px 48px rgba(0,0,0,0.08);
+    transform: translateY(-4px);
+  }
+
+  .glass-card {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+
+  /* Admin scrollbar */
+  .admin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+  .admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(99,102,241,0.3);
+  }
+}
+
+/* Admin Panel Light Mode Support */
+html:not(.dark) .admin-root {
+  --admin-bg: #f8fafc;
+  --admin-surface: #ffffff;
+  --admin-surface-hover: #f1f5f9;
+  --admin-surface-elevated: #e2e8f0;
+  --admin-border: #cbd5e1;
+  --admin-border-hover: #94a3b8;
+  --admin-text-primary: #0f172a;
+  --admin-text-secondary: #475569;
+  --admin-text-muted: #64748b;
+}
+
+html:not(.dark) .admin-root.min-h-screen,
+html:not(.dark) .admin-root .min-h-screen {
+  background-color: var(--admin-bg) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+html:not(.dark) .admin-root aside {
+  background-image: linear-gradient(to bottom, #ffffff, #f8fafc) !important;
+  background-color: #ffffff !important;
+  border-right-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04) !important;
+}
+
+html:not(.dark) .admin-root header {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .admin-root .bg-slate-900,
+html:not(.dark) .admin-root .bg-slate-900\/95,
+html:not(.dark) .admin-root .bg-slate-950,
+html:not(.dark) .admin-root .bg-slate-950\/95,
+html:not(.dark) .admin-root .bg-slate-950\/80 {
+  background-color: var(--admin-surface) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+html:not(.dark) .admin-root .text-white {
+  color: var(--admin-text-primary) !important;
+}
+
+html:not(.dark) .admin-root .text-slate-300 {
+  color: var(--admin-text-secondary) !important;
+}
+
+html:not(.dark) .admin-root .text-slate-400 {
+  color: var(--admin-text-secondary) !important;
+}
+
+html:not(.dark) .admin-root .border-white\/\[0\.08\],
+html:not(.dark) .admin-root .border-white\/\[0\.06\],
+html:not(.dark) .admin-root .border-white\/\[0\.04\] {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .admin-root .bg-white\/\[0\.06\],
+html:not(.dark) .admin-root .bg-white\/\[0\.04\],
+html:not(.dark) .admin-root .bg-white\/\[0\.03\],
+html:not(.dark) .bg-white\/\[0\.02\] {
+  background-color: var(--admin-surface-hover) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .admin-root .hover\:bg-white\/\[0\.04\]:hover,
+html:not(.dark) .admin-root .hover\:bg-white\/\[0\.06\]:hover,
+html:not(.dark) .admin-root .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: var(--admin-surface-elevated) !important;
+}
+
+html:not(.dark) .admin-root select,
+html:not(.dark) .admin-root option,
+html:not(.dark) .admin-root input,
+html:not(.dark) .admin-root textarea {
+  background-color: var(--admin-surface) !important;
+  color: var(--admin-text-primary) !important;
+  border-color: var(--admin-border) !important;
+}
+
+html:not(.dark) .admin-root select:focus,
+html:not(.dark) .admin-root input:focus,
+html:not(.dark) .admin-root textarea:focus {
+  border-color: #6366f1 !important;
+}
+
+html:not(.dark) .admin-root .bg-gradient-to-br.from-white\/\[0\.06\] {
+  background-image: linear-gradient(to bottom right, #ffffff, #f8fafc) !important;
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02), 0 10px 20px rgba(0,0,0,0.03) !important;
+}
+
+html:not(.dark) .admin-root .bg-gradient-to-br.from-indigo-500\/20 {
+  background-image: linear-gradient(to bottom right, rgba(99,102,241,0.08), rgba(168,85,247,0.08)) !important;
+}
+
+html:not(.dark) .admin-root .border-l.border-white\/10 {
+  border-left-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .admin-root .bg-indigo-500\/\[0\.03\] {
+  background-color: rgba(99,102,241,0.04) !important;
+}
+
+html:not(.dark) .admin-root .bg-indigo-500\/\[0\.05\] {
+  background-color: rgba(99,102,241,0.06) !important;
+}
+
+html:not(.dark) .admin-root .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html:not(.dark) .admin-root .bg-white\/\[0\.08\] {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html:not(.dark) .admin-root .bg-white\/\[0\.05\] {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+html:not(.dark) .admin-root .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) .admin-root .group-hover\:opacity-100 {
+  opacity: 0.8 !important;
+}
+
+html:not(.dark) .admin-root .text-slate-500 {
+  color: var(--admin-text-secondary) !important;
+}
+
+html:not(.dark) .admin-root .text-slate-600 {
+  color: var(--admin-text-muted) !important;
+}
+
+html:not(.dark) .admin-root .bg-slate-900\/95 {
+  background-color: var(--admin-surface) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Accent Color Overrides for Admin Panel */
+.min-h-screen .bg-indigo-500,
+.min-h-screen .bg-indigo-600 {
+  background-color: var(--admin-primary) !important;
+}
+.min-h-screen .hover\:bg-indigo-400:hover,
+.min-h-screen .hover\:bg-indigo-500:hover,
+.min-h-screen .group-hover\:bg-indigo-500\/10:group-hover {
+  background-color: var(--admin-primary-hover) !important;
+}
+.min-h-screen .text-indigo-400,
+.min-h-screen .text-indigo-300,
+.min-h-screen .text-indigo-500 {
+  color: var(--admin-primary) !important;
+}
+.min-h-screen .hover\:text-indigo-300:hover,
+.min-h-screen .hover\:text-indigo-400:hover {
+  color: var(--admin-primary) !important;
+}
+.min-h-screen .bg-indigo-500\/10,
+.min-h-screen .bg-indigo-500\/15,
+.min-h-screen .bg-indigo-500\/\[0\.03\],
+.min-h-screen .bg-indigo-500\/\[0\.05\],
+.min-h-screen .bg-indigo-500\/\[0\.15\],
+.min-h-screen .bg-indigo-500\/\[0\.08\],
+.min-h-screen .bg-indigo-500\/\[0\.12\],
+.min-h-screen .bg-indigo-500\/\[0\.1\] {
+  background-color: var(--admin-primary-soft) !important;
+}
+.min-h-screen .border-indigo-500\/20,
+.min-h-screen .border-indigo-500\/30,
+.min-h-screen .border-indigo-500\/10 {
+  border-color: var(--admin-primary-soft) !important;
+}
+.min-h-screen .shadow-indigo-500\/20,
+.min-h-screen .shadow-indigo-500\/30 {
+  --tw-shadow-color: var(--admin-primary) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+}
+.min-h-screen .ring-indigo-500 {
+  --tw-ring-color: var(--admin-primary) !important;
+}
+.min-h-screen .accent-indigo-500 {
+  accent-color: var(--admin-primary) !important;
+}
+.min-h-screen .from-indigo-500 {
+  --tw-gradient-from: var(--admin-primary) !important;
+  --tw-gradient-to: var(--admin-primary-hover) !important;
+}
+.min-h-screen .to-purple-600 {
+  --tw-gradient-to: var(--admin-primary-hover) !important;
+}
+/* Focus border overrides */
+html:not(.dark) .admin-root select:focus,
+html:not(.dark) .admin-root input:focus,
+html:not(.dark) .admin-root textarea:focus {
+  border-color: var(--admin-primary) !important;
+}
