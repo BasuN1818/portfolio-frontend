@@ -38,7 +38,7 @@ const SpotlightNameSection = () => {
     <section
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full py-24 md:py-32 bg-black flex items-center justify-center overflow-hidden select-none border-t border-zinc-900/50 cursor-default"
+      className="hidden md:flex relative w-full py-24 md:py-32 bg-black items-center justify-center overflow-hidden select-none border-t border-zinc-900/50 cursor-default"
     >
       {/* Subtle scan lines background */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.008)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0" />

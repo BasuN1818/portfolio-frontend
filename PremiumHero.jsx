@@ -192,7 +192,7 @@ const PremiumHero = ({ image }) => {
   };
 
   return (
-    <section className="relative w-full min-h-screen bg-black overflow-hidden flex items-center">
+    <section className="relative w-full min-h-[auto] lg:min-h-screen bg-black overflow-hidden flex items-center">
       {/* Background Layers */}
       <ParticleField />
 
@@ -204,15 +204,15 @@ const PremiumHero = ({ image }) => {
       <div className="absolute bottom-[10%] right-[10%] w-[350px] h-[350px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.06)_0%,transparent_70%)] blur-[80px] pointer-events-none z-0" />
 
       {/* Main Content Grid */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-screen lg:min-h-0 lg:h-screen">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-28 pb-12 lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full lg:h-screen">
 
           {/* === LEFT COLUMN: Text Content === */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-col justify-center order-1 pt-24 lg:pt-0"
+            className="flex flex-col justify-center order-1 pt-0 lg:pt-0"
           >
             {/* Eyebrow label */}
             <motion.div variants={fadeUp}>
@@ -282,7 +282,7 @@ const PremiumHero = ({ image }) => {
             variants={fadeRight}
             initial="hidden"
             animate="visible"
-            className="flex items-center justify-center order-2 relative"
+            className="hidden lg:flex items-center justify-center order-2 relative"
           >
             {/* Glassmorphism gradient blob behind photo */}
             <div className="absolute w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] lg:w-[440px] lg:h-[440px] rounded-full bg-gradient-to-br from-cyan-500/10 via-teal-500/5 to-purple-500/10 blur-[60px] pointer-events-none" />

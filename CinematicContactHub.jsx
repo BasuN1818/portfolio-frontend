@@ -465,7 +465,7 @@ const CinematicContactHub = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen bg-[#050505] py-24 px-6 md:px-12 lg:px-24 flex items-center justify-center overflow-hidden font-sans">
+    <section className="relative w-full min-h-[auto] lg:min-h-screen bg-[#050505] py-16 md:py-24 px-6 md:px-12 lg:px-24 flex items-center justify-center overflow-hidden font-sans">
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/5 rounded-full blur-[120px] pointer-events-none"></div>
 

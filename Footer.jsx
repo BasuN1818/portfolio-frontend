@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="relative w-full border-t border-zinc-900 bg-[#020202] py-12 px-6 md:px-12 lg:px-24 overflow-hidden z-20">
+    <footer className="relative w-full border-t border-zinc-900 bg-[#020202] py-8 md:py-12 px-6 md:px-12 lg:px-24 overflow-hidden z-20">
       
       {/* Subtle top glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent shadow-[0_0_20px_rgba(6,182,212,0.5)]"></div>
